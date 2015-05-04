@@ -6,9 +6,11 @@ define(function (require, exports, module) {
   const Plugin = require('extplug/Plugin');
   const UserFindAction = require('plug/actions/users/UserFindAction');
   const User = require('plug/models/User');
+  const users = require('plug/collections/users');
   const rolloverView = require('plug/views/users/userRolloverView');
 
   const UserView = require('./UserView');
+  const getProfileInfo = require('./profile-info');
 
   module.exports = Plugin.extend({
     name: 'User Profiles',
@@ -43,19 +45,27 @@ define(function (require, exports, module) {
     },
 
     showProfile(id) {
-      new UserFindAction(id)
-        .on('success', user => {
+      const show = user => {
+        getProfileInfo(user).then(user => {
           if (this.userView) {
-            this.userView.model = new User(user);
+            this.userView.model = user.clone();
             this.userView.render();
           }
           else {
-            this.userView = new UserView({ model: new User(user) });
+            this.userView = new UserView({ model: user.clone() });
             this.userView.render();
             this.userView.$el.appendTo('body');
           }
           this.userView.show('profile');
-        })
+        });
+      }
+      if (users.get(id)) {
+        show(users.get(id));
+      }
+      else {
+        new UserFindAction(id)
+          .on('success', show);
+      }
     }
   });
 
