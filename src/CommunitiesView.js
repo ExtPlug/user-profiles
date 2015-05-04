@@ -1,22 +1,25 @@
 define(function (require, exports, module) {
   const $ = require('jquery');
-  const { View } = require('backbone');
-  const Style = require('extplug/util/Style');
-  const ListRoomsAction = require('plug/actions/rooms/ListRoomsAction');
-  const CommunityView = require('plug/views/dashboard/list/CellView');
-  const Room = require('plug/models/Room');
 
-  const CommunitiesView = View.extend({
+  const Style = require('extplug/util/Style');
+
+  const ListRoomsAction = require('plug/actions/rooms/ListRoomsAction');
+  // used for drawing rooms
+  const Base = require('plug/views/users/communities/CommunitiesView');
+  const CommunityGridView = require('plug/views/users/communities/CommunityGridView');
+  const Room = require('plug/models/Room');
+  const { getSize } = require('plug/util/window');
+  // used for the Create Room link
+  const Events = require('plug/core/Events');
+  const ShowDialogEvent = require('plug/events/ShowDialogEvent');
+  const RoomCreateDialog = require('plug/views/dialogs/RoomCreateDialog');
+
+  const CommunitiesView = Base.extend({
+    id: null,
     className: 'user-content communities',
     render() {
-      this.$container = $('<div />').addClass('container');
-      this.$rooms = $('<div />').addClass('grid');
-      this.$el.append(this.$container);
-      this.$container.append(this.$rooms);
-      this.$container.jScrollPane();
-      this.scrollPane = this.$container.data('jsp');
-      this.cells = [];
       this.getCommunities(this.model.get('username'));
+      this.allowResize = true;
       return this;
     },
     getCommunities(host) {
@@ -26,26 +29,41 @@ define(function (require, exports, module) {
         })
         .on('error', e => { throw e });
     },
-    onResize(size) {
-    },
     setRooms(rooms) {
-      this.cells = rooms.map(room => {
-        return new CommunityView({ model: new Room(room) });
-      });
-      this.cells.forEach(cell => {
-        cell.render();
-        this.$rooms.append(cell.$el);
-      });
-      this.scrollPane.reinitialise();
-    },
-    remove() {
-      this.cells.forEach(cell => cell.destroy());
-      this.cells = [];
-      this.scrollPane && this.scrollPane.destroy();
-      this.scrollPane = null;
-      this.$container.remove();
-      this.$container = null;
-      this._super();
+      if (!this.$el) return;
+      this.$top = $('<div />').addClass('top');
+      this.$message = $('<div />').addClass('message');
+      this.$box = $('<div />').addClass('box');
+      this.$el
+        .empty()
+        .append(this.$top.append(this.$message))
+        .append(this.$box);
+      this.$box.jScrollPane();
+      this.scrollPane = this.$box.data('jsp');
+
+      this.grid = new CommunityGridView();
+      this.$box.append(this.grid.$el)
+      if (rooms.length === 0) {
+        this.grid.clear();
+        this.$message.text('This user has not created any communities.')
+      }
+      else {
+        this.$message
+          .text(`These are ${this.model.get('username')}'s communities. `)
+          .append(
+            'Click ',
+            $('<a />').attr('href', '#').text('here').on('click', () => {
+              Events.dispatch(new ShowDialogEvent(
+                ShowDialogEvent.SHOW,
+                new RoomCreateDialog()
+              ));
+            }),
+            ' to make your own!'
+          );
+        rooms.map(room => this.grid.draw(new Room(room)));
+      }
+      this.grid.onUpdate();
+      _.defer(() => this.onResize(getSize()));
     }
   });
 
