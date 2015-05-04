@@ -3,14 +3,14 @@ define(function (require, exports, module) {
   const $ = require('jquery');
   const meld = require('meld');
 
-  const Module = require('extplug/Module');
+  const Plugin = require('extplug/Plugin');
   const UserFindAction = require('plug/actions/users/UserFindAction');
   const User = require('plug/models/User');
   const rolloverView = require('plug/views/users/userRolloverView');
 
   const UserView = require('./UserView');
 
-  module.exports = Module.extend({
+  module.exports = Plugin.extend({
     name: 'User Profiles',
 
     enable() {
