@@ -36,7 +36,11 @@ define(function (require, exports, module) {
         'top': '0',
         'left': '0',
         'width': '100%',
-        'height': '100%'
+        'height': '100%',
+
+        // hide Points and Subscribe buttons, since
+        // they always show the current user's data
+        '.meta .points': { 'display': 'none' }
       }
     }
   });
