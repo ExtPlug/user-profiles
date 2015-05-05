@@ -42,7 +42,7 @@ define(function (require, exports, module) {
     // prevent the browser from trying to load all the thumbnail images
     // already
     body = body.replace(/img src=/g, 'img data-src=');
-    let blurb = $('.blurb .box', body).text().trim();
+    let blurb = util.cleanTypedString($('.blurb .box', body).html().trim());
     let history = parseHistory(user, body);
     return user.set({ blurb, history });
   }
