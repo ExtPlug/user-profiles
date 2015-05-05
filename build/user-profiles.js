@@ -374,7 +374,7 @@ define('extplug/user-profiles/profile-info',['require','exports','module','jquer
     // prevent the browser from trying to load all the thumbnail images
     // already
     body = body.replace(/img src=/g, 'img data-src=');
-    var blurb = $('.blurb .box', body).text().trim();
+    var blurb = util.cleanTypedString($('.blurb .box', body).html().trim());
     var history = parseHistory(user, body);
     return user.set({ blurb: blurb, history: history });
   }
