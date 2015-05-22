@@ -16,19 +16,6 @@ define(function (require, exports, module) {
     id: null,
     className: 'user-content communities',
     render() {
-      this.getCommunities(this.model.get('username'));
-      this.allowResize = true;
-      return this;
-    },
-    getCommunities(host) {
-      new ListRoomsAction(host, 0)
-        .on('success', rooms => {
-          this.setRooms(rooms.filter(room => room.host === host));
-        })
-        .on('error', e => { throw e });
-    },
-    setRooms(rooms) {
-      if (!this.$el) return;
       this.$top = $('<div />').addClass('top');
       this.$message = $('<div />').addClass('message');
       this.$box = $('<div />').addClass('box');
@@ -36,11 +23,28 @@ define(function (require, exports, module) {
         .empty()
         .append(this.$top.append(this.$message))
         .append(this.$box);
+
+      this.grid = new CommunityGridView();
+      this.$box.append(this.grid.$el);
+
       this.$box.jScrollPane();
       this.scrollPane = this.$box.data('jsp');
 
-      this.grid = new CommunityGridView();
-      this.$box.append(this.grid.$el)
+      this.getCommunities(this.model.get('username'));
+      this.allowResize = true;
+      return this;
+    },
+
+    getCommunities(host) {
+      new ListRoomsAction(host, 0)
+        .on('success', rooms => {
+          this.setRooms(rooms.filter(room => room.host === host));
+        })
+        .on('error', e => { throw e });
+    },
+
+    setRooms(rooms) {
+      if (!this.$el) return;
       if (rooms.length === 0) {
         this.grid.clear();
         this.$message.text('This user has not created any communities.')
