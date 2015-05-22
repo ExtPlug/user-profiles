@@ -1,6 +1,5 @@
 define(function (require, exports, module) {
 
-  const Style = require('extplug/util/Style');
   const UserView = require('plug/views/users/UserView');
   const Events = require('plug/core/Events');
   const MenuView = require('./MenuView');
@@ -53,18 +52,6 @@ define(function (require, exports, module) {
       this._super();
     }
 
-  });
-
-  UserProfileView._style = new Style({
-    '#extplug-user-profiles': {
-      'background': '#111317',
-      'z-index': '500',
-      '.user-content': {
-        'position': 'absolute',
-        'top': '0',
-        'height': '100%',
-      }
-    }
   });
 
   module.exports = UserProfileView;

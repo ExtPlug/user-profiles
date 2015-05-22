@@ -11,6 +11,7 @@ define(function (require, exports, module) {
 
   const UserView = require('./UserView');
   const getProfileInfo = require('./profile-info');
+  const makeStyle = require('./style');
 
   module.exports = Plugin.extend({
     name: 'User Profiles',
@@ -33,6 +34,7 @@ define(function (require, exports, module) {
           );
         }
       });
+      this.Style(makeStyle());
     },
 
     disable() {

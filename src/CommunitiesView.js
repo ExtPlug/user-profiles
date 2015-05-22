@@ -1,8 +1,6 @@
 define(function (require, exports, module) {
   const $ = require('jquery');
 
-  const Style = require('extplug/util/Style');
-
   const ListRoomsAction = require('plug/actions/rooms/ListRoomsAction');
   // used for drawing rooms
   const Base = require('plug/views/users/communities/CommunitiesView');
@@ -64,18 +62,6 @@ define(function (require, exports, module) {
       }
       this.grid.onUpdate();
       _.defer(() => this.onResize(getSize()));
-    }
-  });
-
-  CommunitiesView._style = new Style({
-    '#extplug-user-profiles .communities': {
-      '.container': {
-        'position': 'absolute',
-        'top': '0',
-        'left': '0',
-        'width': '100%',
-        'height': '100%'
-      }
     }
   });
 
