@@ -7,6 +7,7 @@ define(function (require, exports, module) {
   const CommunityGridView = require('plug/views/users/communities/CommunityGridView');
   const Room = require('plug/models/Room');
   const { getSize } = require('plug/util/window');
+  const SpinnerView = require('plug/views/spinner/SpinnerView');
   // used for the Create Room link
   const Events = require('plug/core/Events');
   const ShowDialogEvent = require('plug/events/ShowDialogEvent');
@@ -30,6 +31,8 @@ define(function (require, exports, module) {
       this.$box.jScrollPane();
       this.scrollPane = this.$box.data('jsp');
 
+      this.showSpinner();
+
       this.getCommunities(this.model.get('username'));
       this.allowResize = true;
       return this;
@@ -45,6 +48,8 @@ define(function (require, exports, module) {
 
     setRooms(rooms) {
       if (!this.$el) return;
+      this.hideSpinner();
+
       if (rooms.length === 0) {
         this.grid.clear();
         this.$message.text('This user has not created any communities.')
@@ -66,6 +71,19 @@ define(function (require, exports, module) {
       }
       this.grid.onUpdate();
       _.defer(() => this.onResize(getSize()));
+    },
+
+    showSpinner() {
+      this.hideSpinner();
+      this._spinner = new SpinnerView({ size: SpinnerView.LARGE });
+      this.scrollPane.getContentPane().append(this._spinner.$el);
+      this._spinner.render();
+    },
+    hideSpinner() {
+      if (this._spinner) {
+        this._spinner.destroy();
+        this._spinner = null;
+      }
     }
   });
 
