@@ -70,7 +70,7 @@ define('extplug/user-profiles/MenuView',['require','exports','module','jquery','
 });
 
 
-define('extplug/user-profiles/ProfileView',['require','exports','module','jquery','backbone','plug/views/users/profile/MetaView','extplug/util/Style'],function (require, exports, module) {
+define('extplug/user-profiles/ProfileView',['require','exports','module','jquery','backbone','plug/views/users/profile/MetaView'],function (require, exports, module) {
   var $ = require('jquery');
 
   var _require = require('backbone');
@@ -78,7 +78,6 @@ define('extplug/user-profiles/ProfileView',['require','exports','module','jquery
   var View = _require.View;
 
   var MetaView = require('plug/views/users/profile/MetaView');
-  var Style = require('extplug/util/Style');
 
   var ProfileView = View.extend({
     className: 'user-content profile',
@@ -101,22 +100,6 @@ define('extplug/user-profiles/ProfileView',['require','exports','module','jquery
       this.meta = null;
       this.$container = null;
       this._super();
-    }
-  });
-
-  ProfileView._style = new Style({
-    '#extplug-user-profiles .profile': {
-      '.container': {
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        width: '100%',
-        height: '100%',
-
-        // hide Points and Subscribe buttons, since
-        // they always show the current user's data
-        '.meta .points': { display: 'none' }
-      }
     }
   });
 
@@ -168,10 +151,8 @@ define('extplug/user-profiles/HistoryView',['require','exports','module','jquery
 });
 
 
-define('extplug/user-profiles/CommunitiesView',['require','exports','module','jquery','extplug/util/Style','plug/actions/rooms/ListRoomsAction','plug/views/users/communities/CommunitiesView','plug/views/users/communities/CommunityGridView','plug/models/Room','plug/util/window','plug/core/Events','plug/events/ShowDialogEvent','plug/views/dialogs/RoomCreateDialog'],function (require, exports, module) {
+define('extplug/user-profiles/CommunitiesView',['require','exports','module','jquery','plug/actions/rooms/ListRoomsAction','plug/views/users/communities/CommunitiesView','plug/views/users/communities/CommunityGridView','plug/models/Room','plug/util/window','plug/views/spinner/SpinnerView','plug/core/Events','plug/events/ShowDialogEvent','plug/views/dialogs/RoomCreateDialog'],function (require, exports, module) {
   var $ = require('jquery');
-
-  var Style = require('extplug/util/Style');
 
   var ListRoomsAction = require('plug/actions/rooms/ListRoomsAction');
   // used for drawing rooms
@@ -183,6 +164,7 @@ define('extplug/user-profiles/CommunitiesView',['require','exports','module','jq
 
   var getSize = _require.getSize;
 
+  var SpinnerView = require('plug/views/spinner/SpinnerView');
   // used for the Create Room link
   var Events = require('plug/core/Events');
   var ShowDialogEvent = require('plug/events/ShowDialogEvent');
@@ -192,10 +174,24 @@ define('extplug/user-profiles/CommunitiesView',['require','exports','module','jq
     id: null,
     className: 'user-content communities',
     render: function render() {
+      this.$top = $('<div />').addClass('top');
+      this.$message = $('<div />').addClass('message');
+      this.$box = $('<div />').addClass('box');
+      this.$el.empty().append(this.$top.append(this.$message)).append(this.$box);
+
+      this.grid = new CommunityGridView();
+      this.$box.append(this.grid.$el);
+
+      this.$box.jScrollPane();
+      this.scrollPane = this.$box.data('jsp');
+
+      this.showSpinner();
+
       this.getCommunities(this.model.get('username'));
       this.allowResize = true;
       return this;
     },
+
     getCommunities: function getCommunities(host) {
       var _this = this;
 
@@ -207,20 +203,14 @@ define('extplug/user-profiles/CommunitiesView',['require','exports','module','jq
         throw e;
       });
     },
+
     setRooms: function setRooms(rooms) {
       var _this2 = this;
 
       if (!this.$el) {
         return;
-      }this.$top = $('<div />').addClass('top');
-      this.$message = $('<div />').addClass('message');
-      this.$box = $('<div />').addClass('box');
-      this.$el.empty().append(this.$top.append(this.$message)).append(this.$box);
-      this.$box.jScrollPane();
-      this.scrollPane = this.$box.data('jsp');
+      }this.hideSpinner();
 
-      this.grid = new CommunityGridView();
-      this.$box.append(this.grid.$el);
       if (rooms.length === 0) {
         this.grid.clear();
         this.$message.text('This user has not created any communities.');
@@ -236,17 +226,18 @@ define('extplug/user-profiles/CommunitiesView',['require','exports','module','jq
       _.defer(function () {
         return _this2.onResize(getSize());
       });
-    }
-  });
+    },
 
-  CommunitiesView._style = new Style({
-    '#extplug-user-profiles .communities': {
-      '.container': {
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        width: '100%',
-        height: '100%'
+    showSpinner: function showSpinner() {
+      this.hideSpinner();
+      this._spinner = new SpinnerView({ size: SpinnerView.LARGE });
+      this.scrollPane.getContentPane().append(this._spinner.$el);
+      this._spinner.render();
+    },
+    hideSpinner: function hideSpinner() {
+      if (this._spinner) {
+        this._spinner.destroy();
+        this._spinner = null;
       }
     }
   });
@@ -255,9 +246,8 @@ define('extplug/user-profiles/CommunitiesView',['require','exports','module','jq
 });
 
 
-define('extplug/user-profiles/UserView',['require','exports','module','extplug/util/Style','plug/views/users/UserView','plug/core/Events','./MenuView','./ProfileView','./HistoryView','./CommunitiesView'],function (require, exports, module) {
+define('extplug/user-profiles/UserView',['require','exports','module','plug/views/users/UserView','plug/core/Events','./MenuView','./ProfileView','./HistoryView','./CommunitiesView'],function (require, exports, module) {
 
-  var Style = require('extplug/util/Style');
   var UserView = require('plug/views/users/UserView');
   var Events = require('plug/core/Events');
   var MenuView = require('./MenuView');
@@ -308,17 +298,6 @@ define('extplug/user-profiles/UserView',['require','exports','module','extplug/u
       this._super();
     }
 
-  });
-
-  UserProfileView._style = new Style({
-    '#extplug-user-profiles': {
-      background: '#111317',
-      'z-index': '500',
-      '.user-content': {
-        position: 'absolute',
-        top: '0',
-        height: '100%' }
-    }
   });
 
   module.exports = UserProfileView;
@@ -433,7 +412,83 @@ define('extplug/user-profiles/profile-info',['require','exports','module','jquer
 });
 
 
-define('extplug/user-profiles/main',['require','exports','module','jquery','meld','extplug/Plugin','plug/actions/users/UserFindAction','plug/models/User','plug/collections/users','plug/views/users/userRolloverView','./UserView','./profile-info'],function (require, exports, module) {
+define('extplug/user-profiles/style',['require','exports','module'],function (require, exports, module) {
+
+  // copy some CSS styles from an element.
+  // used for some of the menu styling, because it's quite complex and
+  // only uses the #user-menu ID ):
+  function copyStyles(el, props) {
+    var style = window.getComputedStyle($(el)[0]);
+    return props.reduce(function (obj, prop) {
+      obj[prop] = style.getPropertyValue(prop);
+      return obj;
+    }, {});
+  }
+
+  return function () {
+    return {
+      '#extplug-user-profiles': {
+        background: '#111317',
+        'z-index': '500',
+        '.user-content': {
+          position: 'absolute',
+          top: '0',
+          height: '100%' },
+
+        '.profile': {
+          '.container': {
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+
+            // hide Points and Subscribe buttons, since
+            // they always show the current user's data
+            '.meta .points': { display: 'none' }
+          }
+        },
+
+        '.communities': {
+          '.container': {
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%'
+          },
+
+          '.spinner': {
+            top: '50px',
+            left: '50%'
+          }
+        }
+      },
+
+      '#extplug-user-profiles-menu': {
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        'max-width': '220px',
+        width: '22%',
+        height: '100%',
+        background: '#1c1f25',
+
+        '.avatar': copyStyles('#user-menu .avatar', ['position', 'overflow', 'width', 'height', 'background']),
+        '.item': copyStyles('#user-menu .item:not(.selected)', ['position', 'width', 'height', 'cursor']),
+        '.item.selected': {
+          background: '#32234c',
+          cursor: 'default'
+        },
+        '.item i': copyStyles('#user-menu .item i', ['top', 'left']),
+        '.item .label': copyStyles('#user-menu .item .label', ['position', 'top', 'left', 'font-size'])
+      }
+    };
+  };
+});
+
+
+define('extplug/user-profiles/main',['require','exports','module','jquery','meld','extplug/Plugin','plug/actions/users/UserFindAction','plug/models/User','plug/collections/users','plug/views/users/userRolloverView','./UserView','./profile-info','./style'],function (require, exports, module) {
 
   var $ = require('jquery');
   var meld = require('meld');
@@ -446,6 +501,7 @@ define('extplug/user-profiles/main',['require','exports','module','jquery','meld
 
   var UserView = require('./UserView');
   var getProfileInfo = require('./profile-info');
+  var makeStyle = require('./style');
 
   module.exports = Plugin.extend({
     name: 'User Profiles',
@@ -464,6 +520,7 @@ define('extplug/user-profiles/main',['require','exports','module','jquery','meld
           }));
         }
       });
+      this.Style(makeStyle());
     },
 
     disable: function disable() {
