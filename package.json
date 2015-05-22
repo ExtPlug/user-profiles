@@ -1,5 +1,5 @@
 { "name": "extplug-user-profiles"
-, "version": "0.0.3"
+, "version": "0.1.0"
 , "description": "ExtPlug plugin for accessing user profiles through the standard plug.dj UI."
 , "devDependencies":
   { "gulp": "^3.8.11"
