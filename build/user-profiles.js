@@ -70,14 +70,49 @@ define('extplug/user-profiles/MenuView',['require','exports','module','jquery','
 });
 
 
-define('extplug/user-profiles/ProfileView',['require','exports','module','jquery','backbone','plug/views/users/profile/MetaView'],function (require, exports, module) {
+define('extplug/user-profiles/MetaView',['require','exports','module','plug/views/users/profile/MetaView','lang/Lang'],function (require, exports, module) {
+
+  var Base = require('plug/views/users/profile/MetaView');
+  var Lang = require('lang/Lang');
+
+  /**
+   * A version of the profile MetaView without Blurb editing.
+   */
+  var MetaView = Base.extend({
+
+    render: function render() {
+      this._super();
+      // remove blurb edit events again
+      this.$('.blurb .box').off();
+      return this;
+    },
+
+    onChange: function onChange() {
+      // if the blurb is empty, plug.dj defaults to "Click here (...)".
+      // we don't really want that because you cannot, in fact, change someone
+      // else's blurb.
+      var blurb = Lang.userPanel.blurb;
+      // so we'll default to the empty string instead!
+      Lang.userPanel.blurb = '';
+      var res = this._super();
+      Lang.userPanel.blurb = blurb;
+      return res;
+    }
+
+  });
+
+  module.exports = MetaView;
+});
+
+
+define('extplug/user-profiles/ProfileView',['require','exports','module','jquery','backbone','./MetaView'],function (require, exports, module) {
   var $ = require('jquery');
 
   var _require = require('backbone');
 
   var View = _require.View;
 
-  var MetaView = require('plug/views/users/profile/MetaView');
+  var MetaView = require('./MetaView');
 
   var ProfileView = View.extend({
     className: 'user-content profile',
@@ -107,24 +142,10 @@ define('extplug/user-profiles/ProfileView',['require','exports','module','jquery
 });
 
 
-define('extplug/user-profiles/HistoryPanelView',['require','exports','module','plug/views/playlists/media/panels/UserHistoryPanelView'],function (require, exports, module) {
-  var HistoryPanelView = require('plug/views/playlists/media/panels/UserHistoryPanelView');
-
-  var ProfileHistoryPanelView = HistoryPanelView.extend({
-    getSelectedRows: function getSelectedRows() {},
-    selectMultipleRows: function selectMultipleRows() {},
-    updateSelectedRows: function updateSelectedRows() {},
-    toggleRow: function toggleRow() {}
-  });
-
-  module.exports = ProfileHistoryPanelView;
-});
-
-
-define('extplug/user-profiles/HistoryView',['require','exports','module','jquery','backbone','./HistoryPanelView'],function (require, exports, module) {
+define('extplug/user-profiles/HistoryView',['require','exports','module','jquery','backbone','plug/views/playlists/media/panels/UserHistoryPanelView'],function (require, exports, module) {
   var $ = require('jquery');
   var Backbone = require('backbone');
-  var HistoryPanelView = require('./HistoryPanelView');
+  var HistoryPanelView = require('plug/views/playlists/media/panels/UserHistoryPanelView');
 
   var HistoryView = Backbone.View.extend({
     id: 'extplug-user-profiles-history',
@@ -551,7 +572,9 @@ define('extplug/user-profiles/main',['require','exports','module','jquery','meld
       if (users.get(id)) {
         show(users.get(id));
       } else {
-        new UserFindAction(id).on('success', show);
+        new UserFindAction(id).on('success', function (user) {
+          return show(new User(user));
+        });
       }
     }
   });
