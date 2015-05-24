@@ -1,7 +1,7 @@
 define(function (require, exports, module) {
   const $ = require('jquery');
   const { View } = require('backbone');
-  const MetaView = require('plug/views/users/profile/MetaView');
+  const MetaView = require('./MetaView');
 
   const ProfileView = View.extend({
     className: 'user-content profile',
