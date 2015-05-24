@@ -66,7 +66,7 @@ define(function (require, exports, module) {
       }
       else {
         new UserFindAction(id)
-          .on('success', show);
+          .on('success', user => show(new User(user)));
       }
     }
   });
