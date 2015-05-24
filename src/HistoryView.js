@@ -1,7 +1,7 @@
 define(function (require, exports, module) {
   const $ = require('jquery');
   const Backbone = require('backbone');
-  const HistoryPanelView = require('./HistoryPanelView');
+  const HistoryPanelView = require('plug/views/playlists/media/panels/UserHistoryPanelView');
 
   const HistoryView = Backbone.View.extend({
     id: 'extplug-user-profiles-history',
