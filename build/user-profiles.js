@@ -414,7 +414,7 @@ define('extplug/user-profiles/profile-info',['require','exports','module','jquer
         score: {
           positive: toInt(el.find('.score .positive')),
           negative: toInt(el.find('.score .negative')),
-          curates: toInt(el.find('.score .grabs')),
+          grabs: toInt(el.find('.score .grabs')),
           listeners: toInt(el.find('.score .listeners'))
         }
       });
