@@ -75,7 +75,7 @@ define(function (require, exports, module) {
         score: {
           positive:  toInt(el.find('.score .positive')),
           negative:  toInt(el.find('.score .negative')),
-          curates:   toInt(el.find('.score .grabs')),
+          grabs:     toInt(el.find('.score .grabs')),
           listeners: toInt(el.find('.score .listeners'))
         }
       });
