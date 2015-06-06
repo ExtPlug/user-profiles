@@ -47,19 +47,19 @@ define('extplug/user-profiles/MenuView',['require','exports','module','jquery','
 
   ProfileMenuView._style = new Style({
     '#extplug-user-profiles-menu': {
-      position: 'absolute',
-      top: '0',
-      left: '0',
+      'position': 'absolute',
+      'top': '0',
+      'left': '0',
       'max-width': '220px',
-      width: '22%',
-      height: '100%',
-      background: '#1c1f25',
+      'width': '22%',
+      'height': '100%',
+      'background': '#1c1f25',
 
       '.avatar': copyStyles('#user-menu .avatar', ['position', 'overflow', 'width', 'height', 'background']),
       '.item': copyStyles('#user-menu .item:not(.selected)', ['position', 'width', 'height', 'cursor']),
       '.item.selected': {
-        background: '#32234c',
-        cursor: 'default'
+        'background': '#32234c',
+        'cursor': 'default'
       },
       '.item i': copyStyles('#user-menu .item i', ['top', 'left']),
       '.item .label': copyStyles('#user-menu .item .label', ['position', 'top', 'left', 'font-size'])
@@ -228,9 +228,8 @@ define('extplug/user-profiles/CommunitiesView',['require','exports','module','jq
     setRooms: function setRooms(rooms) {
       var _this2 = this;
 
-      if (!this.$el) {
-        return;
-      }this.hideSpinner();
+      if (!this.$el) return;
+      this.hideSpinner();
 
       if (rooms.length === 0) {
         this.grid.clear();
@@ -325,7 +324,7 @@ define('extplug/user-profiles/UserView',['require','exports','module','plug/view
 });
 
 
-var _toArray = function (arr) { return Array.isArray(arr) ? arr : Array.from(arr); };
+function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
 
 define('extplug/user-profiles/profile-info',['require','exports','module','jquery','backbone','plug/actions/users/UserFindAction','plug/util/util','plug/models/Media','plug/models/HistoryEntry','extplug/util/request'],function (require, exports, module) {
 
@@ -360,6 +359,15 @@ define('extplug/user-profiles/profile-info',['require','exports','module','jquer
   // gets the HTML contents of a user profile page
   function fetchPage(user) {
     return request('https://plug.dj/@/' + user.get('slug'));
+  }
+
+  // retrieves a room URL slug from a link
+  function getRoomSlug() {
+    var href = arguments[0] === undefined ? '' : arguments[0];
+
+    var parts = href.split('/');
+    // one .pop() for "plug.dj/room-slug", two .pop()s for "plug.dj/room-slug/"
+    return parts.pop() || parts.pop();
   }
 
   // parses a user profile page into a "blurb" and a DJ history collection
@@ -406,10 +414,14 @@ define('extplug/user-profiles/profile-info',['require','exports','module','jquer
         // soundcloud video, we can't really extract the ID properly
         media.set({ format: 2 });
       }
+      var slug = getRoomSlug(el.find('.meta a').attr('href'));
       return new HistoryEntry({
         user: user,
         media: media,
-        room: { name: el.find('.name').text().trim() },
+        room: {
+          name: el.find('.name').text().trim(),
+          slug: slug
+        },
         timestamp: util.convertUnixDateStringToNumberString(el.find('.timestamp').text().trim()),
         score: {
           positive: toInt(el.find('.score .positive')),
@@ -449,57 +461,57 @@ define('extplug/user-profiles/style',['require','exports','module'],function (re
   return function () {
     return {
       '#extplug-user-profiles': {
-        background: '#111317',
+        'background': '#111317',
         'z-index': '500',
         '.user-content': {
-          position: 'absolute',
-          top: '0',
-          height: '100%' },
+          'position': 'absolute',
+          'top': '0',
+          'height': '100%' },
 
         '.profile': {
           '.container': {
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            width: '100%',
-            height: '100%',
+            'position': 'absolute',
+            'top': '0',
+            'left': '0',
+            'width': '100%',
+            'height': '100%',
 
             // hide Points and Subscribe buttons, since
             // they always show the current user's data
-            '.meta .points': { display: 'none' }
+            '.meta .points': { 'display': 'none' }
           }
         },
 
         '.communities': {
           '.container': {
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            width: '100%',
-            height: '100%'
+            'position': 'absolute',
+            'top': '0',
+            'left': '0',
+            'width': '100%',
+            'height': '100%'
           },
 
           '.spinner': {
-            top: '50px',
-            left: '50%'
+            'top': '50px',
+            'left': '50%'
           }
         }
       },
 
       '#extplug-user-profiles-menu': {
-        position: 'absolute',
-        top: '0',
-        left: '0',
+        'position': 'absolute',
+        'top': '0',
+        'left': '0',
         'max-width': '220px',
-        width: '22%',
-        height: '100%',
-        background: '#1c1f25',
+        'width': '22%',
+        'height': '100%',
+        'background': '#1c1f25',
 
         '.avatar': copyStyles('#user-menu .avatar', ['position', 'overflow', 'width', 'height', 'background']),
         '.item': copyStyles('#user-menu .item:not(.selected)', ['position', 'width', 'height', 'cursor']),
         '.item.selected': {
-          background: '#32234c',
-          cursor: 'default'
+          'background': '#32234c',
+          'cursor': 'default'
         },
         '.item i': copyStyles('#user-menu .item i', ['top', 'left']),
         '.item .label': copyStyles('#user-menu .item .label', ['position', 'top', 'left', 'font-size'])
