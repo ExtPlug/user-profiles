@@ -32,6 +32,13 @@ define(function (require, exports, module) {
     return request(`https://plug.dj/@/${user.get('slug')}`);
   }
 
+  // retrieves a room URL slug from a link
+  function getRoomSlug(href = '') {
+    let parts = href.split('/');
+    // one .pop() for "plug.dj/room-slug", two .pop()s for "plug.dj/room-slug/"
+    return parts.pop() || parts.pop();
+  }
+
   // parses a user profile page into a "blurb" and a DJ history collection
   const toInt = el => parseInt(el.find('span').text().trim(), 10);
   function parse(user, body) {
@@ -67,10 +74,14 @@ define(function (require, exports, module) {
         // soundcloud video, we can't really extract the ID properly
         media.set({ format: 2 });
       }
+      let slug = getRoomSlug(el.find('.meta a').attr('href'));
       return new HistoryEntry({
         user: user,
         media: media,
-        room: { name: el.find('.name').text().trim() },
+        room: {
+          name: el.find('.name').text().trim(),
+          slug: slug
+        },
         timestamp: util.convertUnixDateStringToNumberString(el.find('.timestamp').text().trim()),
         score: {
           positive:  toInt(el.find('.score .positive')),
