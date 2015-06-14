@@ -29,10 +29,6 @@ define(function (require, exports, module) {
           <i class="icon icon-history-grey"></i>
           <span class="label">${Lang.userMenu.played}</span>
         </div>
-        <div class="item community" data-value="community">
-          <i class="icon icon-community-grey"></i>
-          <span class="label">${Lang.appMenu.communities}</span>
-        </div>
       `);
       this.$avatar = this.$('.avatar')
         .on('mousedown', this.onPress);

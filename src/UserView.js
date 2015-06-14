@@ -5,7 +5,6 @@ define(function (require, exports, module) {
   const MenuView = require('./MenuView');
   const ProfileView = require('./ProfileView');
   const HistoryView = require('./HistoryView');
-  const CommunitiesView = require('./CommunitiesView');
 
   const UserProfileView = UserView.extend({
     id: 'extplug-user-profiles',
@@ -34,9 +33,6 @@ define(function (require, exports, module) {
       }
       else if (section === 'played') {
         this.view = new HistoryView({ model: this.model });
-      }
-      else if (section === 'community') {
-        this.view = new CommunitiesView({ model: this.model });
       }
       this.$el.append(this.view.$el);
       this.view.render();

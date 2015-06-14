@@ -34,21 +34,6 @@ define(function (require, exports, module) {
             // they always show the current user's data
             '.meta .points': { 'display': 'none' }
           }
-        },
-
-        '.communities': {
-          '.container': {
-            'position': 'absolute',
-            'top': '0',
-            'left': '0',
-            'width': '100%',
-            'height': '100%'
-          },
-
-          '.spinner': {
-            'top': '50px',
-            'left': '50%'
-          }
         }
       },
 
