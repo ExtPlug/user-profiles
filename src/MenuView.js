@@ -50,41 +50,6 @@ define(function (require, exports, module) {
     }
   });
 
-  function copyStyles(el, props) {
-    let style = window.getComputedStyle($(el)[0]);
-    return props.reduce((obj, prop) => {
-      obj[prop] = style.getPropertyValue(prop);
-      return obj;
-    }, {});
-  }
-
-  ProfileMenuView._style = new Style({
-    '#extplug-user-profiles-menu': {
-      'position': 'absolute',
-      'top': '0',
-      'left': '0',
-      'max-width': '220px',
-      'width': '22%',
-      'height': '100%',
-      'background': '#1c1f25',
-
-      '.avatar': copyStyles('#user-menu .avatar', [
-        'position', 'overflow', 'width', 'height', 'background'
-      ]),
-      '.item': copyStyles('#user-menu .item:not(.selected)', [
-        'position', 'width', 'height', 'cursor'
-      ]),
-      '.item.selected': {
-        'background': '#32234c',
-        'cursor': 'default'
-      },
-      '.item i': copyStyles('#user-menu .item i', [ 'top', 'left' ]),
-      '.item .label': copyStyles('#user-menu .item .label', [
-        'position', 'top', 'left', 'font-size'
-      ])
-    }
-  });
-
   return ProfileMenuView;
 
 });
