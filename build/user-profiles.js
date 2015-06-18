@@ -21,7 +21,7 @@ define('extplug/user-profiles/MenuView',['require','exports','module','jquery','
       this.onAvatarChange = this.onAvatarChange.bind(this);
     },
     render: function render() {
-      this.$el.html('\n        <div class="avatar"></div>\n        <div class="item profile" data-value="profile">\n          <i class="icon icon-user-grey"></i>\n          <span class="label">' + Lang.userFriends.profile + '</span>\n        </div>\n        <div class="item played" data-value="played">\n          <i class="icon icon-history-grey"></i>\n          <span class="label">' + Lang.userMenu.played + '</span>\n        </div>\n        <div class="item community" data-value="community">\n          <i class="icon icon-community-grey"></i>\n          <span class="label">' + Lang.appMenu.communities + '</span>\n        </div>\n      ');
+      this.$el.html('\n        <div class="avatar"></div>\n        <div class="item profile" data-value="profile">\n          <i class="icon icon-user-grey"></i>\n          <span class="label">' + Lang.userFriends.profile + '</span>\n        </div>\n        <div class="item played" data-value="played">\n          <i class="icon icon-history-grey"></i>\n          <span class="label">' + Lang.userMenu.played + '</span>\n        </div>\n      ');
       this.$avatar = this.$('.avatar').on('mousedown', this.onPress);
       this.$('.item').on('click', this.onClick);
       this.onAvatarChange();
@@ -34,35 +34,6 @@ define('extplug/user-profiles/MenuView',['require','exports','module','jquery','
       this.aviW = 220;
       this.aviO = 0;
       this.model.get('avatarID').indexOf('dragon') > -1 && (this.aviO = -8, this.aviW = 440);
-    }
-  });
-
-  function copyStyles(el, props) {
-    var style = window.getComputedStyle($(el)[0]);
-    return props.reduce(function (obj, prop) {
-      obj[prop] = style.getPropertyValue(prop);
-      return obj;
-    }, {});
-  }
-
-  ProfileMenuView._style = new Style({
-    '#extplug-user-profiles-menu': {
-      'position': 'absolute',
-      'top': '0',
-      'left': '0',
-      'max-width': '220px',
-      'width': '22%',
-      'height': '100%',
-      'background': '#1c1f25',
-
-      '.avatar': copyStyles('#user-menu .avatar', ['position', 'overflow', 'width', 'height', 'background']),
-      '.item': copyStyles('#user-menu .item:not(.selected)', ['position', 'width', 'height', 'cursor']),
-      '.item.selected': {
-        'background': '#32234c',
-        'cursor': 'default'
-      },
-      '.item i': copyStyles('#user-menu .item i', ['top', 'left']),
-      '.item .label': copyStyles('#user-menu .item .label', ['position', 'top', 'left', 'font-size'])
     }
   });
 
@@ -172,108 +143,13 @@ define('extplug/user-profiles/HistoryView',['require','exports','module','jquery
 });
 
 
-define('extplug/user-profiles/CommunitiesView',['require','exports','module','jquery','plug/actions/rooms/ListRoomsAction','plug/views/users/communities/CommunitiesView','plug/views/users/communities/CommunityGridView','plug/models/Room','plug/util/window','plug/views/spinner/SpinnerView','plug/core/Events','plug/events/ShowDialogEvent','plug/views/dialogs/RoomCreateDialog'],function (require, exports, module) {
-  var $ = require('jquery');
-
-  var ListRoomsAction = require('plug/actions/rooms/ListRoomsAction');
-  // used for drawing rooms
-  var Base = require('plug/views/users/communities/CommunitiesView');
-  var CommunityGridView = require('plug/views/users/communities/CommunityGridView');
-  var Room = require('plug/models/Room');
-
-  var _require = require('plug/util/window');
-
-  var getSize = _require.getSize;
-
-  var SpinnerView = require('plug/views/spinner/SpinnerView');
-  // used for the Create Room link
-  var Events = require('plug/core/Events');
-  var ShowDialogEvent = require('plug/events/ShowDialogEvent');
-  var RoomCreateDialog = require('plug/views/dialogs/RoomCreateDialog');
-
-  var CommunitiesView = Base.extend({
-    id: null,
-    className: 'user-content communities',
-    render: function render() {
-      this.$top = $('<div />').addClass('top');
-      this.$message = $('<div />').addClass('message');
-      this.$box = $('<div />').addClass('box');
-      this.$el.empty().append(this.$top.append(this.$message)).append(this.$box);
-
-      this.grid = new CommunityGridView();
-      this.$box.append(this.grid.$el);
-
-      this.$box.jScrollPane();
-      this.scrollPane = this.$box.data('jsp');
-
-      this.showSpinner();
-
-      this.getCommunities(this.model.get('username'));
-      this.allowResize = true;
-      return this;
-    },
-
-    getCommunities: function getCommunities(host) {
-      var _this = this;
-
-      new ListRoomsAction(host, 0).on('success', function (rooms) {
-        _this.setRooms(rooms.filter(function (room) {
-          return room.host === host;
-        }));
-      }).on('error', function (e) {
-        throw e;
-      });
-    },
-
-    setRooms: function setRooms(rooms) {
-      var _this2 = this;
-
-      if (!this.$el) return;
-      this.hideSpinner();
-
-      if (rooms.length === 0) {
-        this.grid.clear();
-        this.$message.text('This user has not created any communities.');
-      } else {
-        this.$message.text('These are ' + this.model.get('username') + '\'s communities. ').append('Click ', $('<a />').attr('href', '#').text('here').on('click', function () {
-          Events.dispatch(new ShowDialogEvent(ShowDialogEvent.SHOW, new RoomCreateDialog()));
-        }), ' to make your own!');
-        rooms.map(function (room) {
-          return _this2.grid.draw(new Room(room));
-        });
-      }
-      this.grid.onUpdate();
-      _.defer(function () {
-        return _this2.onResize(getSize());
-      });
-    },
-
-    showSpinner: function showSpinner() {
-      this.hideSpinner();
-      this._spinner = new SpinnerView({ size: SpinnerView.LARGE });
-      this.scrollPane.getContentPane().append(this._spinner.$el);
-      this._spinner.render();
-    },
-    hideSpinner: function hideSpinner() {
-      if (this._spinner) {
-        this._spinner.destroy();
-        this._spinner = null;
-      }
-    }
-  });
-
-  module.exports = CommunitiesView;
-});
-
-
-define('extplug/user-profiles/UserView',['require','exports','module','plug/views/users/UserView','plug/core/Events','./MenuView','./ProfileView','./HistoryView','./CommunitiesView'],function (require, exports, module) {
+define('extplug/user-profiles/UserView',['require','exports','module','plug/views/users/UserView','plug/core/Events','./MenuView','./ProfileView','./HistoryView'],function (require, exports, module) {
 
   var UserView = require('plug/views/users/UserView');
   var Events = require('plug/core/Events');
   var MenuView = require('./MenuView');
   var ProfileView = require('./ProfileView');
   var HistoryView = require('./HistoryView');
-  var CommunitiesView = require('./CommunitiesView');
 
   var UserProfileView = UserView.extend({
     id: 'extplug-user-profiles',
@@ -301,8 +177,6 @@ define('extplug/user-profiles/UserView',['require','exports','module','plug/view
         this.view = new ProfileView({ model: this.model });
       } else if (section === 'played') {
         this.view = new HistoryView({ model: this.model });
-      } else if (section === 'community') {
-        this.view = new CommunitiesView({ model: this.model });
       }
       this.$el.append(this.view.$el);
       this.view.render();
@@ -479,21 +353,6 @@ define('extplug/user-profiles/style',['require','exports','module'],function (re
             // hide Points and Subscribe buttons, since
             // they always show the current user's data
             '.meta .points': { 'display': 'none' }
-          }
-        },
-
-        '.communities': {
-          '.container': {
-            'position': 'absolute',
-            'top': '0',
-            'left': '0',
-            'width': '100%',
-            'height': '100%'
-          },
-
-          '.spinner': {
-            'top': '50px',
-            'left': '50%'
           }
         }
       },
