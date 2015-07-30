@@ -87,7 +87,9 @@ define(function (require, exports, module) {
           positive:  toInt(el.find('.score .positive')),
           negative:  toInt(el.find('.score .negative')),
           grabs:     toInt(el.find('.score .grabs')),
-          listeners: toInt(el.find('.score .listeners'))
+          // convert to string because plug defaults to the current audience
+          // size if the listeners count is falsy and a string "0" is not falsy
+          listeners: '' + toInt(el.find('.score .listeners'))
         }
       });
     });
