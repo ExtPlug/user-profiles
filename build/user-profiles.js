@@ -143,13 +143,15 @@ define('extplug/user-profiles/HistoryView',['require','exports','module','jquery
 });
 
 
-define('extplug/user-profiles/UserView',['require','exports','module','plug/views/users/UserView','plug/core/Events','./MenuView','./ProfileView','./HistoryView'],function (require, exports, module) {
+define('extplug/user-profiles/UserView',['require','exports','module','plug/views/users/UserView','plug/core/Events','extplug/util/getUserClasses','./MenuView','./ProfileView','./HistoryView','jquery'],function (require, exports, module) {
 
   var UserView = require('plug/views/users/UserView');
   var Events = require('plug/core/Events');
+  var getUserClasses = require('extplug/util/getUserClasses');
   var MenuView = require('./MenuView');
   var ProfileView = require('./ProfileView');
   var HistoryView = require('./HistoryView');
+  var $ = require('jquery');
 
   var UserProfileView = UserView.extend({
     id: 'extplug-user-profiles',
@@ -162,7 +164,7 @@ define('extplug/user-profiles/UserView',['require','exports','module','plug/view
     },
 
     render: function render() {
-      this.$el.empty();
+      this.$el.empty().removeClass().addClass('app-left').addClass(getUserClasses(this.model.get('id')).join(' '));
       this.menu = new MenuView({ model: this.model });
       this.menu.render();
       this.menu.on('change:section', this.change, this);
@@ -323,98 +325,127 @@ define('extplug/user-profiles/profile-info',['require','exports','module','jquer
 
 define('extplug/user-profiles/style',['require','exports','module'],function (require, exports, module) {
 
-  // copy some CSS styles from an element.
-  // used for some of the menu styling, because it's quite complex and
-  // only uses the #user-menu ID ):
-  function copyStyles(el, props) {
-    var style = window.getComputedStyle($(el)[0]);
-    return props.reduce(function (obj, prop) {
-      obj[prop] = style.getPropertyValue(prop);
-      return obj;
-    }, {});
-  }
-
-  return function () {
-    return {
-      '#extplug-user-profiles': {
-        'background': '#111317',
-        'z-index': '500',
-        '.user-content': {
-          'position': 'absolute',
-          'top': '0',
-          'height': '100%' },
-
-        '.profile': {
-          '.container': {
-            'position': 'absolute',
-            'top': '0',
-            'left': '0',
-            'width': '100%',
-            'height': '100%',
-
-            // hide Points and Subscribe buttons, since
-            // they always show the current user's data
-            '.meta .points': { 'display': 'none' }
-          }
-        }
-      },
-
-      '#extplug-user-profiles-menu': {
+  return {
+    '#extplug-user-profiles': {
+      'background': '#111317',
+      'z-index': '500',
+      '.user-content': {
         'position': 'absolute',
         'top': '0',
-        'left': '0',
-        'max-width': '220px',
-        'width': '22%',
-        'height': '100%',
-        'background': '#1c1f25',
+        'height': '100%' },
 
-        '.avatar': copyStyles('#user-menu .avatar', ['position', 'overflow', 'width', 'height', 'background']),
-        '.item': copyStyles('#user-menu .item:not(.selected)', ['position', 'width', 'height', 'cursor']),
-        '.item.selected': {
-          'background': '#32234c',
-          'cursor': 'default'
-        },
-        '.item i': copyStyles('#user-menu .item i', ['top', 'left']),
-        '.item .label': copyStyles('#user-menu .item .label', ['position', 'top', 'left', 'font-size'])
+      '.profile': {
+        '.container': {
+          'position': 'absolute',
+          'top': '0',
+          'left': '0',
+          'width': '100%',
+          'height': '100%',
+
+          // hide Points and Subscribe buttons, since
+          // they always show the current user's data
+          '.meta .points': { 'display': 'none' }
+        }
       }
-    };
+    },
+
+    '#extplug-user-profiles-menu': {
+      'position': 'absolute',
+      'top': '0',
+      'left': '0',
+      'max-width': '220px',
+      'width': '22%',
+      'height': '100%',
+      'background': '#1c1f25',
+
+      '.avatar': {
+        'position': 'relative',
+        'overflow': 'hidden',
+        'width': '100%',
+        'height': '250px',
+        'background': 'linear-gradient(to bottom, #535d80 0, #32324d 56%, #1a1a1a 73%, #73716d 100%)'
+      },
+      '.item': {
+        'position': 'relative',
+        'width': '100%',
+        'height': '46px',
+        'cursor': 'pointer'
+      },
+      '.item.selected': {
+        'background': '#32234c',
+        'cursor': 'default'
+      },
+      '.item i': {
+        'top': '8px',
+        'left': '5px'
+      },
+      '.item .label': {
+        'position': 'absolute',
+        'top': '12px',
+        'left': '40px',
+        'font-size': '16px'
+      }
+    },
+
+    // make sure user profile links have the same colour as they would be
+    // without links, but do underline them to clarify "clickability" :>
+    '.extplug-user-profiles-link': {
+      'color': 'inherit',
+      'text-decoration': 'underline'
+    }
   };
 });
 
 
-define('extplug/user-profiles/main',['require','exports','module','jquery','meld','extplug/Plugin','plug/actions/users/UserFindAction','plug/models/User','plug/collections/users','plug/views/users/userRolloverView','./UserView','./profile-info','./style'],function (require, exports, module) {
+define('extplug/user-profiles/main',['require','exports','module','jquery','meld','extplug/Plugin','plug/actions/users/UserFindAction','plug/models/User','plug/collections/users','plug/views/users/userRolloverView','plug/views/rooms/users/FriendRowView','./UserView','./profile-info','./style'],function (require, exports, module) {
 
   var $ = require('jquery');
-  var meld = require('meld');
+
+  var _require = require('meld');
+
+  var after = _require.after;
 
   var Plugin = require('extplug/Plugin');
   var UserFindAction = require('plug/actions/users/UserFindAction');
   var User = require('plug/models/User');
   var users = require('plug/collections/users');
   var rolloverView = require('plug/views/users/userRolloverView');
+  var FriendRowView = require('plug/views/rooms/users/FriendRowView');
 
   var UserView = require('./UserView');
   var getProfileInfo = require('./profile-info');
-  var makeStyle = require('./style');
+  var style = require('./style');
 
   module.exports = Plugin.extend({
     name: 'User Profiles',
 
+    style: style,
+
     enable: function enable() {
       var _this = this;
 
-      this._super();
-      this.linkAdvice = meld.after(rolloverView, 'showSimple', function () {
+      this.linkAdvice = after(rolloverView, 'showSimple', function () {
         var username = $('#user-rollover .username');
         if (rolloverView.user.get('level') >= 5) {
           var usernameText = username.text();
-          username.empty().append($('<a />').css({ color: 'white' }).attr('href', 'javascript:void 0;').text(usernameText).on('click', function () {
+          username.empty().append($('<a />').addClass('extplug-user-profiles-link').attr('href', 'javascript:void 0;').text(usernameText).on('click', function () {
             _this.showProfile(rolloverView.user.get('id'));
             rolloverView.cleanup();
           }));
         }
       });
-      this.Style(makeStyle());
+      var userProfiles = this;
+      this.friendsAdvice = after(FriendRowView.prototype, 'render', function () {
+        var _this2 = this;
+
+        var username = this.$('.name');
+        if (this.model.get('level') >= 5) {
+          var usernameText = username.text();
+          username.empty().append($('<a />').addClass('extplug-user-profiles-link').attr('href', 'javascript:void 0;').text(usernameText).on('click', function () {
+            userProfiles.showProfile(_this2.model.get('id'));
+          }));
+        }
+      });
     },
 
     disable: function disable() {
@@ -427,19 +458,19 @@ define('extplug/user-profiles/main',['require','exports','module','jquery','meld
     },
 
     showProfile: function showProfile(id) {
-      var _this2 = this;
+      var _this3 = this;
 
       var show = function show(user) {
         getProfileInfo(user).then(function (user) {
-          if (_this2.userView) {
-            _this2.userView.model = user.clone();
-            _this2.userView.render();
+          if (_this3.userView) {
+            _this3.userView.model = user.clone();
+            _this3.userView.render();
           } else {
-            _this2.userView = new UserView({ model: user.clone() });
-            _this2.userView.render();
-            _this2.userView.$el.appendTo('body');
+            _this3.userView = new UserView({ model: user.clone() });
+            _this3.userView.render();
+            _this3.userView.$el.appendTo('body');
           }
-          _this2.userView.show('profile');
+          _this3.userView.show('profile');
         });
       };
       if (users.get(id)) {
