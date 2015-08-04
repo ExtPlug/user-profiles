@@ -2,9 +2,11 @@ define(function (require, exports, module) {
 
   const UserView = require('plug/views/users/UserView');
   const Events = require('plug/core/Events');
+  const getUserClasses = require('extplug/util/getUserClasses');
   const MenuView = require('./MenuView');
   const ProfileView = require('./ProfileView');
   const HistoryView = require('./HistoryView');
+  const $ = require('jquery');
 
   const UserProfileView = UserView.extend({
     id: 'extplug-user-profiles',
@@ -17,7 +19,10 @@ define(function (require, exports, module) {
     },
 
     render() {
-      this.$el.empty();
+      this.$el.empty()
+        .removeClass()
+        .addClass('app-left')
+        .addClass(getUserClasses(this.model.get('id')).join(' '));
       this.menu = new MenuView({ model: this.model });
       this.menu.render();
       this.menu.on('change:section', this.change, this);
