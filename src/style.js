@@ -61,6 +61,13 @@ define(function (require, exports, module) {
         'left': '40px',
         'font-size': '16px'
       }
+    },
+
+    // make sure user profile links have the same colour as they would be
+    // without links, but do underline them to clarify "clickability" :>
+    '.extplug-user-profiles-link': {
+      'color': 'inherit',
+      'text-decoration': 'underline'
     }
   };
 

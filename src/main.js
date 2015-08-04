@@ -8,6 +8,7 @@ define(function (require, exports, module) {
   const User = require('plug/models/User');
   const users = require('plug/collections/users');
   const rolloverView = require('plug/views/users/userRolloverView');
+  const FriendRowView = require('plug/views/rooms/users/FriendRowView');
 
   const UserView = require('./UserView');
   const getProfileInfo = require('./profile-info');
@@ -25,12 +26,28 @@ define(function (require, exports, module) {
           let usernameText = username.text()
           username.empty().append(
             $('<a />')
-              .css({ color: 'white' })
+              .addClass('extplug-user-profiles-link')
               .attr('href', 'javascript:void 0;')
               .text(usernameText)
               .on('click', () => {
                 this.showProfile(rolloverView.user.get('id'));
                 rolloverView.cleanup();
+              })
+          );
+        }
+      });
+      let userProfiles = this;
+      this.friendsAdvice = after(FriendRowView.prototype, 'render', function () {
+        let username = this.$('.name');
+        if (this.model.get('level') >= 5) {
+          let usernameText = username.text()
+          username.empty().append(
+            $('<a />')
+              .addClass('extplug-user-profiles-link')
+              .attr('href', 'javascript:void 0;')
+              .text(usernameText)
+              .on('click', () => {
+                userProfiles.showProfile(this.model.get('id'));
               })
           );
         }
