@@ -1,7 +1,7 @@
 define(function (require, exports, module) {
 
   const $ = require('jquery');
-  const meld = require('meld');
+  const { after } = require('meld');
 
   const Plugin = require('extplug/Plugin');
   const UserFindAction = require('plug/actions/users/UserFindAction');
@@ -11,14 +11,15 @@ define(function (require, exports, module) {
 
   const UserView = require('./UserView');
   const getProfileInfo = require('./profile-info');
-  const makeStyle = require('./style');
+  const style = require('./style');
 
   module.exports = Plugin.extend({
     name: 'User Profiles',
 
+    style: style,
+
     enable() {
-      this._super();
-      this.linkAdvice = meld.after(rolloverView, 'showSimple', () => {
+      this.linkAdvice = after(rolloverView, 'showSimple', () => {
         let username = $('#user-rollover .username');
         if (rolloverView.user.get('level') >= 5) {
           let usernameText = username.text()
@@ -34,7 +35,6 @@ define(function (require, exports, module) {
           );
         }
       });
-      this.Style(makeStyle());
     },
 
     disable() {
