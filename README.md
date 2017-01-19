@@ -11,7 +11,7 @@ You can install this plugin by going to your ExtPlug settings menu, pressing "In
 and entering this Plugin URL:
 
 ```
-https://extplug.github.io/user-profiles/build/user-profiles.js;extplug/user-profiles/main
+https://extplug.github.io/user-profiles/build/user-profiles.js
 ```
 
 ## Crash Course "User Profile Pages"
@@ -21,28 +21,35 @@ pages of users below level 5 using this plugin.**
 
 Clicking a username anywhere results in a popup like this:
 
-![Profile Link](https://i.imgur.com/hryJUyO.png)
+![Profile Link](./img/profile-link.png)
 
 Clicking a username in such a popup gets you into the Profile View for that
 user with some common information.
 
-[![Profile Meta](https://i.imgur.com/9kPD7BK.png)](https://i.imgur.com/dpv8WVS.png)
+[![Profile Meta](./img/small-profile.png)](./img/profile.png)
 
 You can also check their play history and the public rooms that they host
 straight from the standard UI.
 
-[![Profile History](https://i.imgur.com/d0mD3L5.png)](https://i.imgur.com/L0smEmS.png)
+[![Profile History](./img/small-history.png)](./img/history.png)
 
 ## Building
 
 **Note: this section is intended for developers only.**
 
-This plugin uses NPM for dependency management and `gulp` for building.
+First, install dependencies:
 
-```
+```bash
 npm install
-gulp build
 ```
+
+Then, use:
+
+```bash
+npm run build
+```
+
+The plugin will be built using the [ExtPlug CLI](https://github.com/extplug/extplug-cli).
 
 The built plugin will be stored at `build/user-profiles.js`.
 
