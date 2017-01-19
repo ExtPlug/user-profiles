@@ -27,7 +27,7 @@ function fetchSlug(user) {
 
 // gets the HTML contents of a user profile page
 function fetchPage(user) {
-  return request(`/@/${user.get('slug')}`);
+  return request(`${location.origin}/@/${user.get('slug')}`);
 }
 
 // retrieves a room URL slug from a link
