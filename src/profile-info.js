@@ -29,7 +29,7 @@ define(function (require, exports, module) {
 
   // gets the HTML contents of a user profile page
   function fetchPage(user) {
-    return request(`https://plug.dj/@/${user.get('slug')}`);
+    return request(`/@/${user.get('slug')}`);
   }
 
   // retrieves a room URL slug from a link

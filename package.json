@@ -1,11 +1,18 @@
-{ "name": "extplug-user-profiles"
-, "version": "0.4.0"
-, "description": "ExtPlug plugin for accessing user profiles through the standard plug.dj UI."
-, "devDependencies":
-  { "gulp": "^3.8.11"
-  , "gulp-babel": "^5.1.0"
-  , "gulp-concat": "^2.5.2"
-  , "requirejs": "^2.1.17" }
-, "scripts":
-  { "build": "gulp build"
-  , "test": "jshint src" } }
+{
+  "name": "extplug-user-profiles",
+  "version": "0.4.0",
+  "description": "ExtPlug plugin for accessing user profiles through the standard plug.dj UI.",
+  "repository": "extplug/user-profiles",
+  "main": "build/user-profiles.js",
+  "files": [
+    "build",
+    "src"
+  ],
+  "devDependencies": {
+    "extplug-cli": "^1.0.0"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build -- --minify",
+    "build": "extplug bundle src/main.js build/user-profiles.js"
+  }
+}
