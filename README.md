@@ -1,6 +1,8 @@
 User Profiles
 =============
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/extplug/user-profiles.svg)](https://greenkeeper.io/)
+
 ExtPlug plugin for accessing user profiles through the standard plug.dj UI. It
 allows you to see users's profiles, play histories, and the public rooms they
 host.
