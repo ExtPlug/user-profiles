@@ -9,7 +9,7 @@
     "src"
   ],
   "devDependencies": {
-    "extplug-cli": "^1.0.0"
+    "extplug-cli": "^1.2.2"
   },
   "scripts": {
     "prepublishOnly": "npm run build -- --minify",

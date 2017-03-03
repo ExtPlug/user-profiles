@@ -12,10 +12,14 @@ function wrapEntry(entry) {
 
 // gets full user profile info, including slug, blurb and play history
 export default function getProfileInfo(user) {
-  return request.json(`${location.origin}/_/profile/${user.get('id')}`).then((body) => {
-    const data = body.data[0];
+  return Promise.all([
+    request.json(`${location.origin}/_/profile/${user.get('id')}`),
+    request.json(`${location.origin}/_/users/${user.get('id')}`)
+  ]).then((results) => {
+    const data = results[0].data[0];
 
     return user.set({
+      ...results[1].data[0],
       blurb: data.user.blurb,
       history: new Collection(data.history.map(wrapEntry)),
     });
