@@ -20,35 +20,31 @@ export default Plugin.extend({
   enable() {
     this.linkAdvice = after(rolloverView, 'showSimple', () => {
       let username = $('#user-rollover .username');
-      if (rolloverView.user.get('level') >= 5) {
-        let usernameText = username.text()
-        username.empty().append(
-          $('<a />')
-            .addClass('extplug-user-profiles-link')
-            .attr('href', 'javascript:void 0;')
-            .text(usernameText)
-            .on('click', () => {
-              this.showProfile(rolloverView.user.get('id'));
-              rolloverView.cleanup();
-            })
-        );
-      }
+      let usernameText = username.text()
+      username.empty().append(
+        $('<a />')
+          .addClass('extplug-user-profiles-link')
+          .attr('href', 'javascript:void 0;')
+          .text(usernameText)
+          .on('click', () => {
+            this.showProfile(rolloverView.user.get('id'));
+            rolloverView.cleanup();
+          })
+      );
     });
     let userProfiles = this;
     this.friendsAdvice = after(FriendRowView.prototype, 'render', function () {
       let username = this.$('.name');
-      if (this.model.get('level') >= 5) {
-        let usernameText = username.text()
-        username.empty().append(
-          $('<a />')
-            .addClass('extplug-user-profiles-link')
-            .attr('href', 'javascript:void 0;')
-            .text(usernameText)
-            .on('click', () => {
-              userProfiles.showProfile(this.model.get('id'));
-            })
-        );
-      }
+      let usernameText = username.text()
+      username.empty().append(
+        $('<a />')
+          .addClass('extplug-user-profiles-link')
+          .attr('href', 'javascript:void 0;')
+          .text(usernameText)
+          .on('click', () => {
+            userProfiles.showProfile(this.model.get('id'));
+          })
+      );
     });
   },
 

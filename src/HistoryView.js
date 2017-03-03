@@ -6,14 +6,6 @@ const HistoryView = Backbone.View.extend({
   id: 'extplug-user-profiles-history',
   className: 'user-content',
   render() {
-    if (this.model.get('level') < 5) {
-      this.$el.append(`
-        You can only view the history of users above level 5,
-        but ${this.model.get('username')} is only level
-        ${this.model.get('level')}.
-      `);
-      return this;
-    }
     this.list = new HistoryPanelView({
       collection: this.model.get('history')
     });
