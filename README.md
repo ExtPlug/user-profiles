@@ -11,7 +11,7 @@ You can install this plugin by going to your ExtPlug settings menu, pressing "In
 and entering this Plugin URL:
 
 ```
-https://extplug.github.io/user-profiles/build/user-profiles.js
+https://unpkg.com/extplug-user-profiles
 ```
 
 ## Crash Course "User Profile Pages"
