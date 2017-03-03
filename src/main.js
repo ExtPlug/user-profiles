@@ -65,7 +65,10 @@ export default Plugin.extend({
           this.userView.render();
         }
         else {
-          this.userView = new UserView({ model: user.clone() });
+          this.userView = new UserView({
+            model: user.clone(),
+            appView: this.ext.appView,
+          });
           this.userView.render();
           this.userView.$el.appendTo('body');
         }

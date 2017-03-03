@@ -9,11 +9,11 @@ import $ from 'jquery';
 const UserProfileView = UserView.extend({
   id: 'extplug-user-profiles',
 
-  initialize() {
+  initialize({ appView }) {
     this.resizeBind = this.onResize.bind(this);
     this.showBind = this.onShow.bind(this);
     this.hideBind = this.onHide.bind(this);
-    this.showing = false;
+    this.appView = appView;
   },
 
   render() {
@@ -33,8 +33,7 @@ const UserProfileView = UserView.extend({
     this.section = section;
     if (section === 'profile') {
       this.view = new ProfileView({ model: this.model });
-    }
-    else if (section === 'played') {
+    } else if (section === 'played') {
       this.view = new HistoryView({ model: this.model });
     }
     this.$el.append(this.view.$el);
@@ -42,13 +41,19 @@ const UserProfileView = UserView.extend({
   },
 
   onShow() {
-    $('#footer-user').addClass('showing');
+    const userMetaView = this.appView.footer.user;
+    if (userMetaView) {
+      userMetaView.onShowUser();
+    }
     Events.once('hide:user', this.hide, this);
     this._super();
   },
 
   onHide() {
-    $('#footer-user').removeClass('showing');
+    const userMetaView = this.appView.footer.user;
+    if (userMetaView) {
+      userMetaView.onHideUser();
+    }
     this._super();
   }
 });
