@@ -16,9 +16,6 @@ https://extplug.github.io/user-profiles/build/user-profiles.js
 
 ## Crash Course "User Profile Pages"
 
-**Note: Users below level 5 do not have a profile page. You cannot view profile
-pages of users below level 5 using this plugin.**
-
 Clicking a username anywhere results in a popup like this:
 
 ![Profile Link](./img/profile-link.png)
