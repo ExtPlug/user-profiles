@@ -4,6 +4,10 @@
   "description": "ExtPlug plugin for accessing user profiles through the standard plug.dj UI.",
   "repository": "extplug/user-profiles",
   "main": "build/user-profiles.js",
+  "keywords": [
+    "extplug-plugin",
+    "plug.dj"
+  ],
   "files": [
     "build",
     "src"
