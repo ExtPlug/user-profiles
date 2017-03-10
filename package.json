@@ -1,6 +1,6 @@
 {
   "name": "extplug-user-profiles",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "ExtPlug plugin for accessing user profiles through the standard plug.dj UI.",
   "repository": "extplug/user-profiles",
   "main": "build/user-profiles.js",
